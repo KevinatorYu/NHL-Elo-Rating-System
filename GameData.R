@@ -1,12 +1,13 @@
 library(httr) # change to require
 library(jsonlite)
 library(lubridate)
+library(dplyr)
 
 ## Build dataset of all regular season games
 
 # Define constants: start and end dates, urls, etc.
 start_date <- as.Date("2024-10-01")
-end_date <- as.Date("2024-10-17")
+end_date <- as.Date("2024-10-14")
 
 api_url <- "https://api-web.nhle.com/v1/score/"
 folder <- ""
@@ -30,9 +31,9 @@ if (!file.exists("data/game_data.csv")) {
 
 for (date in date_char) {
   
-  # loop check for if date exists in dataset already
-  # TODO: implement game ID instead of game date for loop check
-  if (!(date %in% game_data$gameDate)) {
+  # loop check for if date exists in dataset already, or if its the end_date
+  # (always update present day because of ongoing games)
+  if (!(date %in% game_data$gameDate) || date == end_date) {
     
     # Scalp data from NHL API using given api_url, start and end dates 
     url <- paste0(api_url, date)
@@ -47,7 +48,10 @@ for (date in date_char) {
       games <- subset(json$games, gameScheduleState != "CNCL")
       
       # Get rid of preseason or playoff games
-      games <- subset(json$games, gameType == 2)
+      games <- subset(games, gameType == 2)
+      
+      # Get rid of ongoing games (must be checked when NHL regular season is in progress)
+      games <- subset(games, gameState == "OFF")
       
       # Change Start time from UTC to PST
       games$startTimePST = with_tz(ymd_hms(games$startTimeUTC, tz = "UTC"), tz = "America/Los_Angeles")
@@ -66,13 +70,22 @@ for (date in date_char) {
       )
       
       # Combine list of games for the day with previous days 
+      before_rows <- nrow(game_data)
       game_data <- rbind(game_data, date_data)
       
-      # Print the date of which games have successfully been added to dataset
-      # Ignore cancelled games
-      if (nrow(date_data) != 0) {
-        print(paste0(date, " added to game_data"))
+      # Remove duplicates
+      game_data <- distinct(game_data)
+      
+      # Count how many games were added
+      after_rows <- nrow(game_data)
+      new_rows <- after_rows - before_rows
+      
+      # Print only if new rows were actually added (ignore cancelled games)
+      if (new_rows > 0 & nrow(date_data) != 0) {
+        plural <- ifelse(new_rows == 1, "game", "games")
+        print(paste0(date, " added to game_data (", new_rows, " new ", plural, ")"))
       }
+  
     }
   }
   
@@ -83,5 +96,8 @@ if (!dir.exists("data")) dir.create("data")
 write.csv(game_data, "data/game_data.csv", row.names = FALSE)
 
 # Clear variables
-# rm("date_data", "games", "json", "res", "date", "date_char", "date_seq", "url")
+rm("date_data", "games", "json", "res", "date", "date_char", "date_seq", "url", "before_rows", "after_rows", "new_rows", "plural")
+
+# Print when game_data successfully loaded
+print("Successfully loaded in game_data")
 
