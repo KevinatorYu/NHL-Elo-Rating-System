@@ -6,9 +6,10 @@ library(lubridate)
 
 # Define constants: start and end dates, urls, etc.
 start_date <- as.Date("2024-10-01")
-end_date <- as.Date("2024-11-01")
+end_date <- as.Date("2024-10-17")
 
 api_url <- "https://api-web.nhle.com/v1/score/"
+folder <- ""
 
 
 
@@ -20,12 +21,14 @@ date_char <- as.character(date_seq)
 
 # Build dataset
 
+# if dataset doesn't exist yet, make a new data frame; else load old dataset
+if (!file.exists("data/game_data.csv")) {
+  game_data <- data.frame()
+} else {
+  game_data <- read.csv("data/game_data.csv")
+}
+
 for (date in date_char) {
-  
-  # if dataset doesn't exist yet, make a new data frame
-  if (!exists("game_data")) {
-    game_data <- data.frame()
-  }
   
   # loop check for if date exists in dataset already
   # TODO: implement game ID instead of game date for loop check
@@ -51,6 +54,7 @@ for (date in date_char) {
       
       # Build list of games for the date
       date_data <- data.frame(
+        gameID = games$id,
         gameDate = games$gameDate,
         # Remove date from startTimePST using regex
         startTimePST = sub("^[^ ]+ ", "", as.character(games$startTimePST)),
@@ -74,6 +78,10 @@ for (date in date_char) {
   
 }
 
+# Export game_data as csv
+if (!dir.exists("data")) dir.create("data")
+write.csv(game_data, "data/game_data.csv", row.names = FALSE)
+
 # Clear variables
-rm("date_data", "games", "json", "res", "date", "date_char", "date_seq", "url")
+# rm("date_data", "games", "json", "res", "date", "date_char", "date_seq", "url")
 
