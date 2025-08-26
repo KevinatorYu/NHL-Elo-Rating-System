@@ -5,15 +5,6 @@ library(dplyr)
 
 ## Build dataset of all regular season games
 
-# Define constants: start and end dates, urls, etc.
-start_date <- as.Date("2024-10-01")
-end_date <- as.Date("2024-10-14")
-
-api_url <- "https://api-web.nhle.com/v1/score/"
-folder <- ""
-
-
-
 # Generate sequence of dates
 date_seq <- seq.Date(from = start_date, to = end_date, by = "day")
 
@@ -35,8 +26,8 @@ for (date in date_char) {
   # (always update present day because of ongoing games)
   if (!(date %in% game_data$gameDate) || date == end_date) {
     
-    # Scalp data from NHL API using given api_url, start and end dates 
-    url <- paste0(api_url, date)
+    # Scalp data from NHL API using given games_api_url, start and end dates 
+    url <- paste0(games_api_url, date)
     res = GET(url)
     json = fromJSON(rawToChar(res$content))
     
@@ -96,7 +87,9 @@ if (!dir.exists("data")) dir.create("data")
 write.csv(game_data, "data/game_data.csv", row.names = FALSE)
 
 # Clear variables
-rm("date_data", "games", "json", "res", "date", "date_char", "date_seq", "url", "before_rows", "after_rows", "new_rows", "plural")
+suppressWarnings({
+  rm("date_data", "games", "json", "res", "date", "date_char", "date_seq", "url", "before_rows", "after_rows", "new_rows", "plural")
+})
 
 # Print when game_data successfully loaded
 print("Successfully loaded in game_data")
