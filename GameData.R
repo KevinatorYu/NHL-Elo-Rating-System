@@ -86,11 +86,6 @@ for (date in date_char) {
 if (!dir.exists("data")) dir.create("data")
 write.csv(game_data, "data/game_data.csv", row.names = FALSE)
 
-# Clear variables
-suppressWarnings({
-  rm("date_data", "games", "json", "res", "date", "date_char", "date_seq", "url", "before_rows", "after_rows", "new_rows", "plural")
-})
-
 # Print when game_data successfully loaded
 print("Successfully loaded in game_data")
 

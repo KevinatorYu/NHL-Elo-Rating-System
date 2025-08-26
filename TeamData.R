@@ -11,7 +11,7 @@ standings <- json$standings
 
 # Build data frame with list of teams
 team_data <- data.frame(
-  teamName = standings$placeName$default,
+  teamName = standings$teamCommonName$default,
   confName = standings$conferenceName,
   divName = standings$divisionName,
   GP = standings$gamesPlayed,
@@ -38,13 +38,12 @@ team_data$baseRank <- seq_len(nrow(team_data))
 team_data <- team_data[, c("baseRank", setdiff(names(team_data), "baseRank"))]
 
 # Export as CSV
-if (!dir.exists("data")) dir.create("data")
-write.csv(team_data, "data/team_data.csv", row.names = FALSE, fileEncoding = "UTF-8")
-
 # Need to use readr because of UTF-8-BOM encoding (Montréal looks weird in Excel)
+if (!dir.exists("data")) dir.create("data")
 write_excel_csv(team_data, "data/team_data.csv")
 
-# Clear variables
-suppressWarnings({
-  rm("json", "res", "standings", "url")
-})
+# Print when team_data successfully loaded
+print("Successfully loaded in team_data")
+
+
+
