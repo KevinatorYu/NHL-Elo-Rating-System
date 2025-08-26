@@ -9,10 +9,10 @@ end_date <- as.Date("2025-04-17")
 games_api_url <- "https://api-web.nhle.com/v1/score/"
 teams_api_url <- "https://api-web.nhle.com/v1/standings/"
 
-# Elo
+# Elo (fivethirtyeight default values)
 startingElo <- 1500
 homeIceBonus <- 50
-Kfactor <- 24
+Kfactor <- 6
 
 # Game Results
 RegWin = 1
@@ -31,3 +31,9 @@ source("elo.R")
 
 # print leaderboard onto console
 leaderboard
+
+
+# References:
+# https://fivethirtyeight.com/methodology/how-our-nhl-predictions-work/
+# https://github.com/Zmalski/NHL-API-Reference
+# Own NHL project (2022), unarchived
