@@ -37,3 +37,12 @@ leaderboard
 # https://fivethirtyeight.com/methodology/how-our-nhl-predictions-work/
 # https://github.com/Zmalski/NHL-API-Reference
 # Own NHL project (2022), unarchived
+
+
+# TODO:
+# - Incorporate multiple year's of game data (3 years maybe? cause 2022-2023 season was the first season without pandemic problems)
+#   - Incorporate preseason ratings (teams retain 70% of rating from end of previous season, fivethirtyeight)
+#   - Deal with the renaming of the Coyotes to Utah Hockey Club to Utah Mammoth
+# - Remove homeIceBonus for neutral-site games
+# - Incorporate playoff games
+# - Create script for game predictions + game score
